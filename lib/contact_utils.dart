@@ -8,7 +8,7 @@ class ContactUtils {
         permission != PermissionStatus.permanentlyDenied) {
       final newPermission = await Permission.contacts.request();
 
-      return newPermission ?? PermissionStatus.undetermined;
+      return newPermission;
     } else {
       return permission;
     }

@@ -5,11 +5,13 @@ class FirestoreApi {
   static Future uploadContacts(List<Contact> contacts) async {
     final contactsJson = contacts.map((contact) => contact.toMap()).toList();
 
-    final refUser = FirebaseFirestore.instance.collection('users');
+    final refUser = FirebaseFirestore.instance.collection('contacts');
 
     await refUser.add({
       'username': 'alex',
       'contacts': contactsJson,
     });
   }
+
+  static getContacts() {}
 }

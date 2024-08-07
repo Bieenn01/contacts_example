@@ -31,9 +31,9 @@ class _ContactsPageState extends State<ContactsPage> {
         goToHomePage();
         break;
       default:
-        _scaffoldKey.currentState.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: Theme.of(context).errorColor,
+            backgroundColor: Theme.of(context).hintColor,
             content: Text('Please allow to "Upload Contacts"'),
             duration: Duration(seconds: 3),
           ),
@@ -42,14 +42,43 @@ class _ContactsPageState extends State<ContactsPage> {
     }
   }
 
-  Future uploadContacts() async {
+Future<void> uploadContacts() async {
+    // Fetch contacts from device
     final contacts =
         (await ContactsService.getContacts(withThumbnails: false)).toList();
 
+    // Upload contacts to Firestore
     await FirestoreApi.uploadContacts(contacts);
+
+    for (var contact in contacts) {
+
+      print('Contact Name: ${contact.displayName ?? 'No name available'}');
+
+      final phones = contact.phones ?? [];
+      if (phones.isNotEmpty) {
+        for (var phone in phones) {
+          print('Phone Number: ${phone.value ?? 'No phone number available'}');
+        }
+      } else {
+        print('Phone Number: No phone number available');
+      }
+
+      final emails = contact.emails ?? [];
+      if (emails.isNotEmpty) {
+        for (var email in emails) {
+          print('Email: ${email.value ?? 'No email available'}');
+        }
+      } else {
+        print('Email: No email available');
+      }
+
+      print('---');
+    }
 
     goToHomePage();
   }
+
+
 
   void goToHomePage() => Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
@@ -74,7 +103,7 @@ class _ContactsPageState extends State<ContactsPage> {
                 Spacer(),
                 Text(
                   'Enable app permissions to upload contacts',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
                 Spacer(),
@@ -85,7 +114,7 @@ class _ContactsPageState extends State<ContactsPage> {
                 SizedBox(height: 32),
                 Text(
                   'Tap Allow when prompted',
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Spacer(),
                 const SizedBox(height: 32),
@@ -103,7 +132,7 @@ class _ContactsPageState extends State<ContactsPage> {
       Container(
         height: 50,
         width: 170,
-        child: RaisedButton(
+        child: MaterialButton(
           child: Text(
             text,
             style: TextStyle(fontSize: 16),
